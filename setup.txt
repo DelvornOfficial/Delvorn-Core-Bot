@@ -1,0 +1,120 @@
+=============================================================
+             VPS SETUP GUIDE FOR TgBot
+=============================================================
+
+Directory on VPS: ~/TgBot/
+Database Name:    TgBot
+
+-------------------------------------------------------------
+STEP 1: INSTALL POSTGRESQL & CREATE DATABASE
+-------------------------------------------------------------
+If PostgreSQL is not installed yet on new VPS:
+sudo apt update
+sudo apt install -y postgresql postgresql-contrib
+sudo systemctl start postgresql
+sudo systemctl enable postgresql
+
+Set password for postgres user:
+sudo -u postgres psql -c "ALTER USER postgres WITH PASSWORD 'YOUR_PASSWORD_HERE';"
+
+Create the database named 'TgBot':
+sudo -u postgres createdb TgBot
+
+Verify database created:
+sudo -u postgres psql -l | grep TgBot
+
+
+-------------------------------------------------------------
+STEP 2: UPLOAD / COPY BOT FILES TO VPS
+-------------------------------------------------------------
+All files should be inside: ~/TgBot/
+
+Required files:
+- bot.py
+- config.py
+- database.py
+- helpers.py
+- attack.py
+- group.py
+- keys.py
+- reseller.py
+- admin.py
+- feedback.py
+- requirements.txt
+- .env
+
+Check files on VPS:
+cd ~/TgBot
+ls -la
+
+
+-------------------------------------------------------------
+STEP 3: CONFIGURE .env
+-------------------------------------------------------------
+Open and edit .env in ~/TgBot/:
+nano ~/TgBot/.env
+
+Make sure it has:
+DATABASE_URL=postgresql://postgres:YOUR_PASSWORD_HERE@localhost:5432/TgBot
+
+(Save and exit in nano: Ctrl+O, Enter, Ctrl+X)
+
+
+-------------------------------------------------------------
+STEP 4: INSTALL DEPENDENCIES & PM2
+-------------------------------------------------------------
+Install Python tools:
+sudo apt install -y python3 python3-pip python3-venv
+
+Install Bot Python requirements:
+cd ~/TgBot
+pip3 install -r requirements.txt
+
+If Node.js and PM2 are not yet installed on new VPS:
+sudo apt install -y nodejs npm
+sudo npm install -g pm2
+
+
+-------------------------------------------------------------
+STEP 5: RUN & TEST BOT (Direct Test)
+-------------------------------------------------------------
+cd ~/TgBot
+python3 bot.py
+
+You should see:
+[*] Starting bot...
+[+] Connected to PostgreSQL database: TgBot
+[+] Database tables verified/created successfully.
+[+] All handlers registered. Running...
+
+Press Ctrl+C to stop the test run.
+
+
+-------------------------------------------------------------
+STEP 6: HOST BOT USING PM2 (Process Name: TgBot)
+-------------------------------------------------------------
+Start the bot with PM2:
+cd ~/TgBot
+pm2 start bot.py --name "TgBot" --interpreter python3
+
+Make PM2 save and auto-start on VPS reboot:
+pm2 save
+pm2 startup
+
+(Note: If `pm2 startup` outputs a `sudo env PATH=...` command, copy and run it once)
+
+-------------------------------------------------------------
+STEP 7: PM2 USEFUL MANAGEMENT COMMANDS
+-------------------------------------------------------------
+Check status:
+pm2 status
+
+View live logs:
+pm2 logs TgBot
+
+Restart bot:
+pm2 restart TgBot
+
+Stop bot:
+pm2 stop TgBot
+=============================================================

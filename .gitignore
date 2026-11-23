@@ -1,0 +1,21 @@
+# Environment variables (sensitive credentials)
+.env
+
+# Python cache
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+
+# Virtual environments
+venv/
+env/
+.venv/
+
+# Data and local DB files
+data/
+
+# OS files
+.DS_Store
+Thumbs.db

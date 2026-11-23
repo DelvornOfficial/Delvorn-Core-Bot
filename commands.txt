@@ -1,0 +1,411 @@
+# ==============================================================================
+#                     BOT COMMANDS REFERENCE GUIDE
+# ==============================================================================
+
+This document lists every single command available in the bot, categorized by 
+subject, who can use it (Admin, Reseller, User), and its exact syntax.
+
+------------------------------------------------------------------------------
+TABLE OF CONTENTS:
+1. PUBLIC / USER COMMANDS
+2. ATTACK & SYSTEM COMMANDS
+3. KEY & REDEEM COMMANDS
+4. RESELLER MANAGEMENT COMMANDS
+5. ADMIN USER MANAGEMENT COMMANDS
+6. ATTACK SETTINGS & SECURITY COMMANDS
+7. GROUP ACCESS CONTROL COMMANDS
+8. FEEDBACK & SUPPORT COMMANDS
+------------------------------------------------------------------------------
+
+==============================================================================
+1. PUBLIC / USER COMMANDS (Anyone / Approved Users)
+==============================================================================
+Command:       /start
+Who can use:   Everyone
+Description:   Shows welcome screen, account status (plan, days left, credits), 
+               or guide on how to activate key using /redeem.
+
+Command:       /myinfo
+Who can use:   Registered Users
+Description:   Displays your current plan details:
+               - Expiration date & remaining days
+               - Daily attack limit & attacks done today
+               - Max attack duration allowed
+               - User ID
+
+Command:       /redeem <code>
+Who can use:   Everyone
+Description:   Redeems an access key to activate or extend access.
+Example:       /redeem VIP-30D-XYZ12345
+
+Command:       /help
+Who can use:   Everyone
+Description:   Displays full list of commands available to the user based 
+               on their permission level (User, Reseller, or Admin).
+
+
+==============================================================================
+2. ATTACK & SYSTEM COMMANDS
+==============================================================================
+Command:       /attack <ip> <port> <duration>
+Who can use:   Users with active plan (in Private chat or Approved Groups)
+Description:   Launches attack request via API.
+               - Has real-time updating live countdown message.
+               - Checks concurrent attack limits and user cooldowns.
+               - Checks blocked ports and daily limits.
+Allowed time:  60, 90, 120, 150, 180, 210, 240, 270, 300 seconds.
+Example:       /attack 1.1.1.1 80 120
+
+Command:       /status
+Who can use:   Active Users / Admins
+Description:   Shows live status of currently running attacks, live progress bar,
+               time remaining, target IP/port, and server load.
+
+Command:       /ping
+Who can use:   Everyone
+Description:   Checks bot responsiveness, server uptime, and database latency.
+
+Command:       /getid
+Who can use:   Everyone
+Description:   Returns your Telegram User ID and the current Chat/Group ID.
+
+
+Command:       /setup
+Who can use:   Everyone
+Description:   Provides setup video tutorial link if configured by owner.
+
+
+==============================================================================
+3. KEY & REDEEM COMMANDS (Admin & Resellers)
+==============================================================================
+Key Format:    delvorncheat-<duration>-<random5> (Admin)
+               <reseller_username>-<duration>-<random5> (Reseller)
+
+Command:       /genkey <duration> [limit] [attack_time] [cooldown]
+Who can use:   Owner (unlimited free), Admins & Resellers (spends balance)
+Description:   Generates a VIP redeemable key with usage limit (how many users can redeem it).
+               Shows bot username, redeem format, and setup tutorial.
+Example:       /genkey 30d 1
+Example:       /genkey 7d 5
+
+Command:       /delkey <key>
+Who can use:   Admin
+Description:   Deletes the key AND immediately revokes/terminates access for every 
+               user who redeemed this key.
+Example:       /delkey delvorncheat-30d-XYZ12
+
+Command:       /gentrial <time> [count | device]
+Who can use:   Owner & Appointed Admins
+Description:   Generates free trial keys with mutual exclusion:
+               - If key count is given, device is 1 (e.g. /gentrial 24h 5 -> 5 keys, 1 device each).
+               - If device is given, key count is 1 (e.g. /gentrial 24h 3dev -> 1 key, 3 devices).
+               Every trial key generated includes:
+               - Setup Guide Video Link (set via /setup <link>)
+               - HttpCanary Download Link (set via /canary <link>)
+Examples:      /gentrial 2h
+               /gentrial 24h 5
+               /gentrial 1d 3dev
+
+Command:       /canary [link]
+Who can use:   All Users (read link) / Admin (set link with /canary <link>)
+Description:   Admin can update the official HttpCanary link with /canary <link>.
+               Any user or group sending /canary gets the official download link.
+
+Command:       /setup [link]
+Who can use:   All Users (read tutorial) / Admin (set link with /setup <link>)
+Description:   Admin can update the official setup guide link with /setup <link>.
+
+
+Command:       /gentrialfor <user_id> <hours> [count]
+Who can use:   Owner & Appointed Admins
+Description:   Directly assigns trial access/keys to a specific Telegram user ID.
+Examples:      /gentrialfor 123456789 2
+               /gentrialfor 123456789 24 5
+
+Command:       /list_codes
+Who can use:   Owner (all keys) / Admins & Resellers (own created keys only)
+Description:   Lists active keys with current used/limit count.
+
+Command:       /block_code <code>
+Who can use:   Owner & Appointed Admins
+Description:   Blocks/invalidates a code from being redeemed. Does not delete it.
+
+Command:       /unblock_code <code>
+Who can use:   Owner & Appointed Admins
+Description:   Re-enables a previously blocked code so it can be redeemed again.
+
+Command:       /deletetrials
+Who can use:   Owner & Appointed Admins
+Description:   Removes all expired or unredeemed trial keys at once.
+
+
+==============================================================================
+4. RESELLER MANAGEMENT COMMANDS (Admin Only)
+==============================================================================
+Command:       /addreseller <chatid> <balance> <duration>
+Who can use:   Owner & Appointed Admins (Senior Resellers)
+Description:   Appoints a user as reseller, allocates credits (cost: 4 per key),
+               and sets their plan validity duration (e.g. 12h, 7d, 30d).
+Example:       /addreseller 123456789 100 30d
+
+Command:       /delreseller <chatid>
+Who can use:   Owner (any reseller) & Admins (own created resellers only)
+Description:   Revokes reseller status and access from a user.
+Example:       /delreseller 123456789
+
+Command:       /resellerlist
+Who can use:   Owner (all resellers) & Admins (own created resellers only)
+Description:   Lists all active resellers with Name, @Username, Chat ID,
+               available Credits, and Expiry validity status.
+
+Command:       /addcredit <chatid> <amount>
+Who can use:   Owner (unlimited) & Admins (transfers from own balance to own resellers)
+Description:   Adds credits to an existing reseller.
+Example:       /addcredit 123456789 40
+
+Command:       /removecredit <chatid> <amount>
+Who can use:   Owner (any reseller) & Admins (reclaims from own resellers)
+Description:   Deducts credits from a reseller's balance.
+Example:       /removecredit 123456789 20
+
+Command:       /reseller_info [chatid]
+Who can use:   Owner (any reseller), Admins (own resellers), Reseller (own profile)
+Description:   Displays reseller balance, plan expiry, and keys generated.
+
+
+==============================================================================
+5. ADMIN USER MANAGEMENT COMMANDS (Admin Only)
+==============================================================================
+Command:       /users
+Who can use:   Owner Only
+Description:   Lists all registered users, active plans, and expiry dates.
+
+Command:       /get_user_info <user_id>
+Who can use:   Owner Only
+Description:   Displays complete profile, attack history, plan details, and status.
+Example:       /get_user_info 123456789
+
+Command:       /set_user_limit <user_id> <daily_limit>
+Who can use:   Owner Only
+Description:   Modifies daily attack limit for an individual user.
+Example:       /set_user_limit 123456789 100
+
+Command:       /remove <user_id>
+Who can use:   Owner Only
+Description:   Removes a user's active plan/access immediately.
+Example:       /remove 123456789
+
+Command:       /remove_expired
+Who can use:   Owner Only
+Description:   Cleans up all expired users from active database.
+
+Command:       /reset_user <user_id>
+Who can use:   Owner Only
+Description:   Resets a user's daily attack count to 0.
+Example:       /reset_user 123456789
+
+Command:       /extend_all_users <days>
+Who can use:   Owner Only
+Description:   Adds bonus days to all active users (e.g. compensation for downtime).
+Example:       /extend_all_users 3
+
+Command:       /ban <user_id> [reason]
+Who can use:   Owner Only
+Description:   Bans a user from using the bot completely.
+Example:       /ban 123456789 Abusing attack API
+
+Command:       /unban <user_id>
+Who can use:   Owner Only
+Description:   Unbans a previously banned user.
+Example:       /unban 123456789
+
+Command:       /banned_list
+Who can use:   Owner Only
+Description:   Shows list of all banned user IDs with reasons.
+
+Command:       /broadcast <message>
+Who can use:   Owner Only
+Description:   Sends a global announcement message to all bot users.
+Example:       /broadcast Server maintenance completed! Bot is back online.
+
+Command:       /backup_users
+Who can use:   Owner Only
+Description:   Generates and exports a backup file of all users and database records.
+
+
+==============================================================================
+6. ATTACK SETTINGS & SECURITY (Admin Only)
+==============================================================================
+Command:       /settime <seconds>
+Who can use:   Owner Only
+Description:   Sets maximum global attack time allowed.
+Example:       /settime 240
+
+Command:       /setcooldown <seconds>
+Who can use:   Owner Only
+Description:   Sets cooldown wait time required between attacks for users.
+Example:       /setcooldown 60
+
+Command:       /setconcurrent <number>
+Who can use:   Owner Only
+Description:   Sets maximum simultaneous attacks allowed on the whole bot.
+Example:       /setconcurrent 5
+
+Command:       /setapi <url> [key]
+Who can use:   Owner Only
+Description:   Updates the backend attack API endpoint and optional API key dynamically.
+Example:       /setapi https://automation.delvorn.in/attack
+
+Command:       /changeapikey <apikey>
+Who can use:   Owner Only
+Description:   Quickly updates only the attack API key without changing the URL.
+               Saves directly to server database.
+Example:       /changeapikey Delvorn_Core_D1SL6ULF
+
+Command:       /state
+
+Who can use:   Admin
+Description:   Shows current bot settings: max time, cooldown, concurrent limit, 
+               feedback status, API endpoint, active threads.
+
+Command:       /server_stats
+Who can use:   Owner Only
+Description:   Displays VPS server hardware health: CPU usage, RAM usage, 
+               disk space, database connection pool status.
+
+Command:       /maintenanceon
+Who can use:   Owner Only
+Description:   Puts bot into maintenance mode. Blocks non-admin attacks and broadcasts
+               an alert to ALL users and authorized groups.
+
+Command:       /maintenanceoff
+Who can use:   Owner Only
+Description:   Lifts maintenance mode, unblocks attacks, and broadcasts a resume
+               notification to ALL users and authorized groups.
+
+Command:       /setvideo
+Who can use:   Owner Only
+Description:   Uploads a new video or animation into the bot's random attack rotation.
+               Simply send a video/animation with /setvideo in the caption (or reply to one).
+               It automatically saves into video/ and is included in random rotation.
+
+
+==============================================================================
+7. GROUP ACCESS CONTROL COMMANDS (Admin Only)
+==============================================================================
+Command:       /approvegroup <groupid> <duration> [conc] [max_time] [cooldown]
+Who can use:   Owner Only
+Description:   Authorizes a Telegram group for a specific duration (e.g. 24h, 7d, 30d).
+               All members of an authorized group can use /attack and /status 
+               DIRECTLY without buying or redeeming an individual key!
+Example:       /approvegroup -100123456789 30d
+
+Command:       /delgroup <groupid>
+Who can use:   Owner Only
+Description:   Unauthorizes a group immediately.
+Example:       /delgroup -100123456789
+
+Command:       /grouplist
+Who can use:   Owner Only
+Description:   Lists all authorized groups with Group Title, Group ID, 
+               and Authorization Expiry status.
+
+
+==============================================================================
+8. FEEDBACK & SUPPORT COMMANDS
+==============================================================================
+Command:       /feedbackon
+Who can use:   Owner Only
+Description:   Enables mandatory screenshot/feedback mode. Users must submit 
+               proof/screenshot to admin after attack.
+
+Command:       /feedbackoff
+Who can use:   Owner Only
+Description:   Disables mandatory feedback mode.
+
+Command:       /feebackforwad <chatid>
+Who can use:   Owner Only
+Description:   Adds a forwarding destination (Admin, Channel ID, or Group ID).
+               Supports:
+               - /feebackforwad admin (Adds Admin DMs)
+               - /feebackforwad -1001234567890 (Adds Channel or Group ID)
+
+Command:       /forwadlist
+Who can use:   Owner Only
+Description:   Shows the full active list of all forwarding destinations.
+
+Command:       /delforward <chatid>
+Who can use:   Owner Only
+Description:   Removes a specific chat ID from the forwarding destinations list.
+
+Feature:       Photo/Screenshot Handler
+Who can use:   Users (in DM or Groups)
+Description:   When user sends a screenshot in private DM or in a group, it is 
+               automatically captured and forwarded to ALL destinations in the list!
+
+
+==============================================================================
+9. OWNER-EXCLUSIVE COMMANDS & MULTI-OWNER MESSAGING (Owner Only)
+==============================================================================
+Command:       /addadmin <chatid> <balance> <duration>
+Who can use:   Owner Only
+Description:   Promotes a Telegram user to Admin status, grants them initial credits,
+               and sets their admin validity duration (e.g. 30d, 7d, 24h).
+Example:       /addadmin 123456789 200 30d
+
+Command:       /deladmin <chatid>
+Who can use:   Owner Only
+Description:   Demotes and revokes admin status from an appointed admin.
+Example:       /deladmin 123456789
+
+Command:       /adminlist
+Who can use:   Owner Only
+Description:   Displays complete list of appointed admins, their credit balance, and 
+               resellers under them.
+
+Command:       /userlist
+Who can use:   Owner Only
+Description:   Full paginated list of all users registered with the bot, including their 
+               current status (Active, Expired, Blocked).
+
+Command:       /omsg <message> (Alias: /oreply)
+Who can use:   Owner Only
+Description:   Direct communication channel between bot owners. Sends a private message 
+               to all other bot owners registered in the configuration.
+Example:       /omsg Server maintenance will begin in 10 minutes.
+
+Command:       /setimageforward <channel_id>
+Who can use:   Owner Only
+Description:   Configures an official destination channel where any photo/image sent in 
+               any authorized group is automatically forwarded in real-time.
+Example:       /setimageforward -1001234567890
+
+Command:       /block <chatid> [reason]
+Who can use:   Owner Only
+Description:   Permanently blocks a user from using the bot and launching attacks anywhere.
+Example:       /block 123456789 Rule violation
+
+Command:       /unblock <chatid>
+Who can use:   Owner Only
+Description:   Unblocks a previously blocked user.
+Example:       /unblock 123456789
+
+Command:       /blocklist
+Who can use:   Owner Only
+Description:   Lists all currently blocked chat IDs and their block dates.
+
+Command:       /delkey <key> (Reseller capability)
+Who can use:   Resellers (own keys) & Admins (all keys)
+Description:   Resellers can delete any unredeemed key created by their own account.
+
+Feature:       Reseller Direct Attacks
+Who can use:   Resellers
+Description:   Resellers can launch /attack directly without buying or redeeming an access key.
+
+Feature:       Multi-Device Shared Expiry Keys
+Who can use:   Admins & Resellers (/genkey <duration> [devices])
+Description:   When generating a key for multiple devices (e.g. /genkey 5h 100), all devices 
+               share the exact same expiry timer. As soon as the first device redeems the key, 
+               the timer starts and all 100 devices activate and expire at the exact same moment.
+==============================================================================
+
